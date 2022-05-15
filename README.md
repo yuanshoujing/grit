@@ -1,2 +1,3 @@
 # grit
-A simple Web application development framework
+
+简易 Web 开发框架
