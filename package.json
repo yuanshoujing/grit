@@ -18,6 +18,12 @@
   },
   "homepage": "https://github.com/yuanshoujing/grit#readme",
   "devDependencies": {
-    "rollup": "^2.73.0"
+    "@babel/core": "^7.17.10",
+    "@babel/preset-env": "^7.17.10",
+    "@rollup/plugin-babel": "^5.3.1",
+    "@rollup/plugin-commonjs": "^22.0.0",
+    "@rollup/plugin-node-resolve": "^13.3.0",
+    "rollup": "^2.73.0",
+    "rollup-plugin-terser": "^7.0.2"
   }
 }
