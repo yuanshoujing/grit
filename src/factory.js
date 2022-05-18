@@ -18,10 +18,29 @@ function _render({ root, template, data = {} }) {
 
 function reform({ children = {} }) {
   const result = {};
-  for (const [name, create] of Object.entries(children)) {
-    result[name] = create();
+  for (const [slot, create] of Object.entries(children)) {
+    result[slot] = create();
   }
-  return result;
+
+  return {
+    children: result,
+  };
+}
+
+async function _mount(context, node) {
+  const { root, prepare, mounted, render, rendered = false } = context;
+  _.isFunction(prepare) && (await prepare.call(context));
+  rendered || render();
+  node.replaceChildren(root);
+  _.isFunction(mounted) && mounted.call(context);
+}
+
+function _mountChildren(context) {
+  const { $, children = {} } = context;
+  for (const [slot, child] of Object.entries(children)) {
+    const mnt = $(`slot[name=${slot}]`);
+    mnt && child.mount(mnt);
+  }
 }
 
 function create({ className, name, tag = "div" }) {
@@ -37,8 +56,24 @@ function create({ className, name, tag = "div" }) {
     unBinders && unBindDomEvents(unBinders);
     _render(result);
     unBinders = bindDomEvents(result);
+
+    Object.assign(result, {
+      rendered: true,
+    });
+
+    _mountChildren(result);
   };
 
+  const mount = (wrap) => {
+    _mount(result, wrap);
+  };
+
+  const reformed = reform(result);
+
+  Object.assign(result, reformed, {
+    render,
+    mount,
+  });
   return result;
 }
 
