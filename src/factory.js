@@ -1,7 +1,8 @@
 import _ from "lodash";
 import mitt from "mitt";
 
-import { bindDomEvents, unBindDomEvents } from "./events";
+import { bindDomEvents, unBindDomEvents, EventDataChanged } from "./events";
+import { dataProxy } from "./proxy";
 
 function _render({ root, template, data = {} }) {
   let compile = null;
@@ -27,9 +28,8 @@ function reform({ children = {} }) {
   };
 }
 
-async function _mount(context, node) {
-  const { root, prepare, mounted, render, rendered = false } = context;
-  _.isFunction(prepare) && (await prepare.call(context));
+function _mount(context, node) {
+  const { root, mounted, render, rendered = false } = context;
   rendered || render();
   node.replaceChildren(root);
   _.isFunction(mounted) && mounted.call(context);
@@ -43,7 +43,15 @@ function _mountChildren(context) {
   }
 }
 
-function create({ className, name, tag = "div" }) {
+async function create({
+  template = null,
+  data = {},
+  children = {},
+  className = null,
+  name = null,
+  prepare = null,
+  tag = "div",
+}) {
   const root = document.createElement(tag);
   root.id = _.uniqueId("grit-");
   name && root.setAttribute("name", name);
@@ -64,21 +72,27 @@ function create({ className, name, tag = "div" }) {
     _mountChildren(result);
   };
 
+  const rerender = _.debounce(() => {
+    render();
+  }, 100);
+
   const mount = (wrap) => {
     _mount(result, wrap);
   };
 
-  const reformed = reform(result);
+  const reformed = reform({ children });
+  Object.assign(result, reformed);
 
-  Object.assign(result, reformed, {
-    render,
-    mount,
-  });
+  _.isFunction(prepare) && (await prepare.call(result));
+
+  const dp = dataProxy({ ...data }, result.emit);
+
+  Object.assign(result, { data: dp, render, mount });
   return result;
 }
 
 export default function (args) {
-  return function () {
-    return create(args);
+  return async function () {
+    return await create(args);
   };
 }
