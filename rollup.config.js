@@ -14,5 +14,7 @@ export default {
     plugins: [terser()],
   },
 
-  plugins: [nodeResolve(), commonjs(), babel({ babelHelpers: "bundled" })],
+  plugins: [nodeResolve(), commonjs(), babel({ babelHelpers: "runtime" })],
+
+  external: ["lodash", /@babel\/runtime/],
 };
