@@ -11,7 +11,7 @@ export default {
   output: {
     dir: "dist",
     format: "umd",
-    name: "grit",
+    name: "niba",
     sourcemap: true,
     plugins: [terser()],
   },

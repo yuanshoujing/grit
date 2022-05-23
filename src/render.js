@@ -11,7 +11,7 @@ const createInstance = () => {
   });
 
   Object.entries(_routes).forEach(([name, create]) => {
-    if (_.isFunction(create) && create.name === "grit") {
+    if (_.isFunction(create) && create.name === "niba") {
       _routes[name] = create();
     }
   });

@@ -11,7 +11,7 @@
  * @property {function} mounted 挂载后
  *
  */
-const grit = {
+const niba = {
   name: "名称",
   reactive: true,
 
@@ -21,8 +21,8 @@ const grit = {
   },
 
   children: {
-    "grit-1": grit,
-    "grit-2": grit,
+    "niba-1": niba,
+    "niba-2": niba,
   },
 
   events: {

@@ -3,7 +3,7 @@ import debug from "debug";
 
 import { EventRouteChanged } from "./events";
 
-const logger = debug("grit:router");
+const logger = debug("niba:router");
 
 export const RouteEvents = mitt();
 
