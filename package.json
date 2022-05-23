@@ -1,5 +1,5 @@
 {
-  "name": "niba",
+  "name": "@niba/core",
   "version": "0.0.1",
   "description": "简易 Web 开发框架",
   "main": "index.js",
