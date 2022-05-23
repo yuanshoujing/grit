@@ -25,7 +25,7 @@ export default {
       targets: [
         {
           src: "package.json",
-          dest: "dist/package.json",
+          dest: "dist",
         },
       ],
     }),
