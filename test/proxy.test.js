@@ -16,10 +16,9 @@ test("data-proxy-test", async () => {
   const r = await new Promise((resolve) => {
     const dp = dataProxy(data, emit);
     on(EventDataChanged, ([value, prev, property]) => {
-      log(`--> v: ${JSON.stringify(v)}, p: ${p}`);
-      resolve(v);
+      resolve([value, prev, property]);
     });
     dp.x = 11;
   });
-  //   expect(r.x).toBe(11);
+  expect(r).toEqual([11, 1, "x"]);
 });
