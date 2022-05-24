@@ -44,7 +44,7 @@ function _mountChildren(context) {
 }
 
 async function create({
-  template = null,
+  template,
   data = {},
   children = {},
   className = null,
@@ -56,6 +56,8 @@ async function create({
   root.id = _.uniqueId("niba-");
   name && root.setAttribute("name", name);
   className && (root.className = className);
+  const $ = root.querySelector.bind(root);
+  const $$ = root.querySelectorAll.bind(root);
 
   const result = mitt();
 
@@ -87,7 +89,19 @@ async function create({
 
   const dp = dataProxy({ ...data }, result.emit);
 
-  Object.assign(result, { data: dp, render, mount });
+  Object.assign(result, {
+    $,
+    $$,
+    root,
+    template,
+    data: dp,
+    className,
+    name,
+    prepare,
+    tag,
+    render,
+    mount,
+  });
   return result;
 }
 
