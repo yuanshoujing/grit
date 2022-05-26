@@ -5,7 +5,7 @@ import debug from "debug";
 debug.enable("*");
 
 const { on, off, emit } = mitt();
-const log = debug("proxy-test");
+const log = debug("niba:proxy.test");
 
 test("data-proxy-test", async () => {
   const data = {

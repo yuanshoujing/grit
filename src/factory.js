@@ -1,10 +1,13 @@
 import _ from "lodash";
 import mitt from "mitt";
+import debug from "debug";
 
 import { bindDomEvents, unBindDomEvents, EventDataChanged } from "./events";
 import { dataProxy } from "./proxy";
 
-function _render({ root, template, data = {} }) {
+const log = debug("niba:factory");
+
+function _render(root, template, data = {}) {
   let compile = null;
   if (typeof template === "function") {
     compile = template;
@@ -17,41 +20,25 @@ function _render({ root, template, data = {} }) {
   root.innerHTML = compile({ ...data });
 }
 
-function reform({ children = {} }) {
+function _reformChildren(children = {}) {
   const result = {};
   for (const [slot, create] of Object.entries(children)) {
     result[slot] = create();
   }
 
-  return {
-    children: result,
-  };
+  return result;
 }
 
-function _mount(context, node) {
-  const { root, mounted, render, rendered = false } = context;
-  rendered || render();
-  node.replaceChildren(root);
-  _.isFunction(mounted) && mounted.call(context);
-}
-
-function _mountChildren(context) {
-  const { $, children = {} } = context;
+function _mountChildren(children = {}, $) {
   for (const [slot, child] of Object.entries(children)) {
     const mnt = $(`slot[name=${slot}]`);
     mnt && child.mount(mnt);
   }
 }
 
-async function create({
-  template,
-  data = {},
-  children = {},
-  className = null,
-  name = null,
-  prepare = null,
-  tag = "div",
-}) {
+function create(args) {
+  const { template, tag = "div", className = null, name = null } = args;
+
   const root = document.createElement(tag);
   root.id = _.uniqueId("niba-");
   name && root.setAttribute("name", name);
@@ -59,54 +46,48 @@ async function create({
   const $ = root.querySelector.bind(root);
   const $$ = root.querySelectorAll.bind(root);
 
-  const result = mitt();
+  const { on, off, emit } = mitt();
+  const result = Object.assign({ ...args }, { $, $$, root, on, off, emit });
 
+  const children = _reformChildren(result.children);
+  const data = dataProxy({ ...result.data }, result.emit);
+  Object.assign(result, { children, data });
+
+  let rendered = false;
   let unBinders = null;
   const render = () => {
     unBinders && unBindDomEvents(unBinders);
-    _render(result);
+    _render(root, template, data);
     unBinders = bindDomEvents(result);
+    rendered = true;
 
-    Object.assign(result, {
-      rendered: true,
-    });
-
-    _mountChildren(result);
+    _mountChildren(children, $);
   };
 
   const rerender = _.debounce(() => {
     render();
+    log("--> rendered");
   }, 100);
 
   const mount = (wrap) => {
-    _mount(result, wrap);
+    rendered || render();
+    wrap.replaceChildren(root);
+
+    on(EventDataChanged, rerender);
+
+    const { mounted } = result;
+    _.isFunction(mounted) && mounted.call(result);
   };
 
-  const reformed = reform({ children });
-  Object.assign(result, reformed);
+  Object.assign(result, { mount });
 
-  _.isFunction(prepare) && (await prepare.call(result));
-
-  const dp = dataProxy({ ...data }, result.emit);
-
-  Object.assign(result, {
-    $,
-    $$,
-    root,
-    template,
-    data: dp,
-    className,
-    name,
-    prepare,
-    tag,
-    render,
-    mount,
-  });
   return result;
 }
 
 export default function (args) {
   return async function () {
-    return await create(args);
+    const { prepare = null } = args;
+    _.isFunction(prepare) && (await prepare.call(args));
+    return create(args);
   };
 }
