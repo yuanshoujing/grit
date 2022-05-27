@@ -5,29 +5,28 @@ debug.enable("*");
 
 const log = debug("niba:factory.test");
 
-const nb = {
+const nb = factory({
   template: "<div>Hello, <%- x %>!</div>",
 
   data: {
     x: "world",
   },
-};
+});
 
-const pnb = {
+const pnb = factory({
   template: "<div><%- x %></div><slot name='c1'></slot>",
 
   children: {
-    c1: factory(nb),
+    c1: nb,
   },
 
   data: {
     x: "c1",
   },
-};
+});
 
 test("factory-test", async () => {
-  const create = factory(nb);
-  const instance = await create();
+  const instance = await nb();
   log("--> niba instance: %O", instance);
 
   const wrap = document.createElement("div");
@@ -50,8 +49,7 @@ test("factory-test", async () => {
 });
 
 test("children-test", async () => {
-  const create = factory(pnb);
-  const instance = await create();
+  const instance = await pnb();
   log("--> niba instance: %O", instance);
 
   const wrap = document.createElement("div");
