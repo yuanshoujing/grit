@@ -20,10 +20,10 @@ function _render(root, template, data = {}) {
   root.innerHTML = compile({ ...data });
 }
 
-function _reformChildren(children = {}) {
+async function _reformChildren(children = {}) {
   const result = {};
   for (const [slot, create] of Object.entries(children)) {
-    result[slot] = create();
+    result[slot] = await create();
   }
 
   return result;
@@ -31,12 +31,13 @@ function _reformChildren(children = {}) {
 
 function _mountChildren(children = {}, $) {
   for (const [slot, child] of Object.entries(children)) {
+    log("--> child: %O", child);
     const mnt = $(`slot[name=${slot}]`);
     mnt && child.mount(mnt);
   }
 }
 
-function create(args) {
+async function create(args) {
   const { template, tag = "div", className = null, name = null } = args;
 
   const root = document.createElement(tag);
@@ -49,7 +50,7 @@ function create(args) {
   const { on, off, emit } = mitt();
   const result = Object.assign({ ...args }, { $, $$, root, on, off, emit });
 
-  const children = _reformChildren(result.children);
+  const children = await _reformChildren(result.children);
   const data = dataProxy({ ...result.data }, result.emit);
   Object.assign(result, { children, data });
 
@@ -88,6 +89,6 @@ export default function (args) {
   return async function () {
     const { prepare = null } = args;
     _.isFunction(prepare) && (await prepare.call(args));
-    return create(args);
+    return await create(args);
   };
 }
