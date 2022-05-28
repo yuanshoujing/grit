@@ -92,5 +92,3 @@ export const replace = (to, state = null) => {
     to,
   });
 };
-
-function create(routes = {}) {}
