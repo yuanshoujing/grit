@@ -1,11 +1,11 @@
-import factory from "../src/factory";
+import view from "../src/view";
 
 import debug from "debug";
 debug.enable("*");
 
-const log = debug("niba:factory.test");
+const log = debug("niba:view.test");
 
-const nb = factory({
+const nb = view({
   template: "<div>Hello, <%- x %>!</div>",
 
   data: {
@@ -13,7 +13,7 @@ const nb = factory({
   },
 });
 
-const pnb = factory({
+const pnb = view({
   template: "<div><%- x %></div><slot name='c1'></slot>",
 
   children: {
@@ -25,7 +25,7 @@ const pnb = factory({
   },
 });
 
-test("factory-test", async () => {
+test("view-test", async () => {
   const instance = await nb();
   log("--> niba instance: %O", instance);
 

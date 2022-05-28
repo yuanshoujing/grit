@@ -1,10 +1,10 @@
-import factory from "../src/factory";
+import view from "../src/view";
 
-const nb0 = factory({
+const nb0 = view({
   template: "<div>NB 0!</div>",
 });
 
-const nb1 = factory({
+const nb1 = view({
   template: "<div>NB 1!</div>",
 });
 

@@ -5,7 +5,7 @@ import debug from "debug";
 import { bindDomEvents, unBindDomEvents, EventDataChanged } from "./events";
 import { dataProxy } from "./proxy";
 
-const log = debug("niba:factory");
+const log = debug("niba:view");
 
 function _render(root, template, data = {}) {
   let compile = null;
