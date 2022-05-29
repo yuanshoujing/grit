@@ -14,7 +14,7 @@ function create(mnt, routes = {}) {
 
     mnt.innerHTML = "";
 
-    for (const [path, value] of Object.entries(context.routes)) {
+    for (const [path, value] of Object.entries(routes)) {
       if (to !== path) {
         continue;
       }
