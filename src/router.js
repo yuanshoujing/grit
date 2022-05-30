@@ -3,7 +3,7 @@ import debug from "debug";
 
 import { EventRouteChanged } from "./events";
 
-const logger = debug("niba:router");
+const log = debug("niba:router");
 
 export const RouteEvents = mitt();
 
@@ -28,7 +28,7 @@ const searchParser = (url) => {
   return result;
 };
 
-const urlParser = (dest, origin = location.origin) => {
+export const urlParser = (dest, origin = location.origin) => {
   const url = new URL(dest, origin);
   const path = url.pathname.length > 0 ? url.pathname.slice(1) : null;
   const search = searchParser(url);
@@ -53,6 +53,7 @@ const stateChanged = (evt) => {
   } else {
     return;
   }
+  log("--> state changed: %O", evt, pathInfo);
 
   const route = {
     state: evt.state,
@@ -60,7 +61,9 @@ const stateChanged = (evt) => {
     from: prevRoute.to,
     to: options.mode === "history" ? pathInfo.path : pathInfo.hash,
   };
+  log("--> state route: %O", route);
 
+  log("--> prev route: %O", prevRoute, prevRoute.to === route.to);
   if (prevRoute.to !== route.to) {
     RouteEvents.emit(EventRouteChanged, route);
     Object.assign(prevRoute, route);
@@ -78,6 +81,7 @@ export const boot = (opts) => {
 };
 
 export const push = (to, state = null) => {
+  log("--> push: ", to);
   history.pushState(state, null, to);
   stateChanged({
     state,

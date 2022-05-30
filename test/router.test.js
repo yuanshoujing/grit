@@ -1,14 +1,32 @@
-import view from "../src/view";
+import debug from "debug";
 
-const nb0 = view({
-  template: "<div>NB 0!</div>",
+import { RouteEvents, boot, push, urlParser } from "../src/router";
+import { EventRouteChanged } from "../src/events";
+
+debug.enable("*");
+const log = debug("niba:router-test");
+
+RouteEvents.on(EventRouteChanged, (route) => {
+  log("--> route: %O", route);
 });
 
-const nb1 = view({
-  template: "<div>NB 1!</div>",
+test("router-url-parser", () => {
+  let result = urlParser("/home/abc");
+  expect(result.path).toBe("home/abc");
+  result = urlParser("#/home/abc");
+  expect(result.hash).toBe("home/abc");
 });
 
-const routes = {
-  "": nb0,
-  nb1: nb1,
-};
+test("route-url-lstrip", () => {
+  const r = /^(#\/)/;
+  let u = "#/home/abc";
+  u.match();
+});
+
+test("router-boot-test", async () => {
+  boot();
+
+  push("#/home/abc");
+
+  push("#/home");
+});

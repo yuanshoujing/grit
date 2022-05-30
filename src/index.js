@@ -8,13 +8,13 @@ const log = debug("niba:app");
 function create(mnt, routes = {}) {
   const result = {};
 
-  RouteEvents.on(EventRouteChanged, (route) => {
+  const routesHandler = (route) => {
     logger.info("--> route: ", route);
     const { state, search, from, to } = route;
 
     mnt.innerHTML = "";
 
-    for (const [path, value] of Object.entries(context.routes)) {
+    for (const [path, func] of Object.entries(routes)) {
       if (to !== path) {
         continue;
       }
@@ -36,7 +36,9 @@ function create(mnt, routes = {}) {
         break;
       }
     }
-  });
+  };
+
+  RouteEvents.on(EventRouteChanged, routesHandler);
 
   return result;
 }
