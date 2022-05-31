@@ -28,13 +28,13 @@ const searchParser = (url) => {
   return result;
 };
 
-export const urlParser = (dest, origin = location.origin) => {
+const urlParser = (dest, origin = location.origin) => {
   const url = new URL(dest, origin);
-  const path = url.pathname.length > 0 ? url.pathname.slice(1) : null;
+  const path = url.pathname.length > 0 ? url.pathname : null;
   const search = searchParser(url);
 
   const hashUrl = new URL(url.hash.slice(1), origin);
-  const hash = hashUrl.pathname.length > 0 ? hashUrl.pathname.slice(1) : null;
+  const hash = hashUrl.pathname.length > 0 ? hashUrl.pathname : null;
   Object.assign(search, searchParser(hashUrl));
 
   return {
@@ -53,7 +53,6 @@ const stateChanged = (evt) => {
   } else {
     return;
   }
-  log("--> state changed: %O", evt, pathInfo);
 
   const route = {
     state: evt.state,
@@ -61,9 +60,7 @@ const stateChanged = (evt) => {
     from: prevRoute.to,
     to: options.mode === "history" ? pathInfo.path : pathInfo.hash,
   };
-  log("--> state route: %O", route);
 
-  log("--> prev route: %O", prevRoute, prevRoute.to === route.to);
   if (prevRoute.to !== route.to) {
     RouteEvents.emit(EventRouteChanged, route);
     Object.assign(prevRoute, route);
@@ -80,8 +77,18 @@ export const boot = (opts) => {
   });
 };
 
-export const push = (to, state = null) => {
-  log("--> push: ", to);
+function clean(url = "") {
+  const r = /^(#\/|#|\/)+/;
+  const _url = url.replace(r, "");
+  const { mode } = options;
+
+  return mode === "hash" ? "#/" + _url : "/" + _url;
+}
+
+export const push = (url, state = null) => {
+  log("--> push: ", url);
+  const to = clean(url);
+
   history.pushState(state, null, to);
   stateChanged({
     state,
@@ -89,7 +96,10 @@ export const push = (to, state = null) => {
   });
 };
 
-export const replace = (to, state = null) => {
+export const replace = (url, state = null) => {
+  log("--> push: ", url);
+  const to = clean(url);
+
   history.replaceState(state, null, to);
   stateChanged({
     state,
