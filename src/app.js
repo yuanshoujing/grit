@@ -39,27 +39,17 @@ function create(mnt, routes = {}) {
 
     mnt.innerHTML = "";
 
-    for (const [path, value] of Object.entries(routes)) {
-      if (to !== path) {
+    for (const [target, handle] of Object.entries(routes)) {
+      if (to !== target) {
         continue;
       }
 
-      if (_.isString(value) && _.has(context, value)) {
-        const handle = context[value];
-        if (_.isFunction(handle)) {
-          handle.call(context);
-          break;
+      (async () => {
+        const obj = await handle();
+        if (_.has(obj, "root") && _.has(obj, "mount")) {
+          obj.mount(mnt);
         }
-      }
-
-      if (
-        _.isPlainObject(value) &&
-        _.has(value, "gid") &&
-        _.has(value, "mount")
-      ) {
-        value.mount(mnt);
-        break;
-      }
+      })();
     }
   });
 
