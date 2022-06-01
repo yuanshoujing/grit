@@ -7,6 +7,19 @@ import { dataProxy } from "./proxy";
 
 const log = debug("niba:view");
 
+function _replace(_html, _keys = []) {
+  for (const k of _keys) {
+    const sRe = new RegExp(`<\\s*${k}\\s*>`, "ig");
+    const eRe = new RegExp(`<\\s*\/\\s*${k}\\s*>`, "ig");
+    const re = new RegExp(`<\\s*${k}\\s*\/\\s*>`, "ig");
+    _html.replaceAll(sRe, `<slot name="${k}">`);
+    _html.replaceAll(eRe, "</slot>");
+    _html.replaceAll(re, `<slot name="${k}"></slot>`);
+  }
+
+  // TODO: 对 niba-gate 的处理
+}
+
 function _render(root, template, data = {}) {
   let compile = null;
   if (typeof template === "function") {
@@ -69,6 +82,12 @@ async function create(args) {
     render();
     log("--> rendered");
   }, 100);
+
+  Object.assign(result, {
+    get gate() {
+      return rendered ? $("slot[role=gate]") : null;
+    },
+  });
 
   const mount = (wrap) => {
     rendered || render();
