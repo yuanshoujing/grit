@@ -6,6 +6,7 @@ import { bindDomEvents, unBindDomEvents, EventDataChanged } from "./events";
 import { dataProxy } from "./proxy";
 
 const log = debug("niba:view");
+const GATE = "nb-gate";
 
 function _replace(_html, _keys = []) {
   for (const k of _keys) {
@@ -17,7 +18,7 @@ function _replace(_html, _keys = []) {
     _html.replaceAll(re, `<slot name="${k}"></slot>`);
   }
 
-  // TODO: 对 niba-gate 的处理
+  // TODO: 对 GATE 的处理
 }
 
 function _render(root, template, data = {}) {
