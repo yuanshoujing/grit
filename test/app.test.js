@@ -35,6 +35,15 @@ const nbs = view({
 
 const routes = [
   {
-    "/": frame,
+    path: "/",
+    view: () => {
+      return frame;
+    },
+    children: [
+      {
+        path: "/hello",
+        view: nb,
+      },
+    ],
   },
 ];

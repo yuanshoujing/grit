@@ -1,11 +1,12 @@
 import debug from "debug";
+import path from "path";
 
 import { EventRouteChanged } from "./events";
 import { RouteEvents } from "./router";
 
 const log = debug("niba:app");
 
-function findHandler(routes, route) {
+function findHandler(routes, paths = []) {
   for (const [path, value] of Object.entries(routes)) {
     if (route !== path) {
       continue;

@@ -30,7 +30,10 @@ const searchParser = (url) => {
 
 const urlParser = (dest, origin = location.origin) => {
   const url = new URL(dest, origin);
-  const path = url.pathname.length > 0 ? url.pathname : null;
+
+  let path = url.pathname.length > 0 ? url.pathname : null;
+  path = path.replaceAll(/\/+|\\+/gi, "/");
+
   const search = searchParser(url);
 
   const hashUrl = new URL(url.hash.slice(1), origin);
