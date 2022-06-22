@@ -37,6 +37,8 @@ function create(mnt, routes = {}) {
   RouteEvents.on(EventRouteChanged, (route) => {
     logger.info("--> route: ", route);
     const { state, search, from, to } = route;
+    const paths = to.split("/");
+    findHandler(routes, paths); // TODO:
 
     mnt.innerHTML = "";
 
