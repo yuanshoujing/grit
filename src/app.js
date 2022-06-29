@@ -1,33 +1,20 @@
 import debug from "debug";
-import path from "path";
 
 import { EventRouteChanged } from "./events";
 import { RouteEvents } from "./router";
 
 const log = debug("niba:app");
 
-function findHandler(routes, paths = []) {
+function findHandler(routes, route) {
   for (const [path, value] of Object.entries(routes)) {
-    if (route !== path) {
+    if (route.indexOf(path) !== 0) {
       continue;
     }
 
-    if (_.isString(value) && _.has(context, value)) {
-      const handle = context[value];
-      if (_.isFunction(handle)) {
-        handle.call(context);
-        break;
-      }
-    }
+    const sub_route = route.substring(path.length);
+    findHandler(routes, sub_route);
 
-    if (
-      _.isPlainObject(value) &&
-      _.has(value, "gid") &&
-      _.has(value, "mount")
-    ) {
-      value.mount(mnt);
-      break;
-    }
+    // TODO: 递归返回值
   }
 }
 
@@ -37,8 +24,7 @@ function create(mnt, routes = {}) {
   RouteEvents.on(EventRouteChanged, (route) => {
     logger.info("--> route: ", route);
     const { state, search, from, to } = route;
-    const paths = to.split("/");
-    findHandler(routes, paths); // TODO:
+    findHandler(routes, to);
 
     mnt.innerHTML = "";
 
