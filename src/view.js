@@ -8,8 +8,6 @@ import { dataProxy } from "./proxy";
 const log = debug("niba:view");
 const GATE = "nb-gate";
 
-export class NiBa {}
-
 function _replace(_html, _keys = []) {
   for (const k of _keys) {
     const sRe = new RegExp(`<\\s*${k}\\s*>`, "ig");

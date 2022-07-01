@@ -1,4 +1,5 @@
 import view from "../src/view";
+import CView from "../src/cview";
 
 import debug from "debug";
 debug.enable("*");
@@ -58,4 +59,14 @@ test("children-test", async () => {
   expect(instance.root.innerHTML).toBe(
     `<div>c1</div><slot name="c1"><div id="niba-3"><div>Hello, world!</div></div></slot>`
   );
+});
+
+test("view-class-test", () => {
+  const v = new CView({});
+  log(Object.keys(v));
+  log(v.data);
+  v.data.a = 2;
+  log(v instanceof CView);
+  log(typeof v);
+  log(typeof v.data);
 });

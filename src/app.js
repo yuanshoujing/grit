@@ -38,14 +38,19 @@ function create(mnt, routes = {}) {
 
     mnt.innerHTML = "";
 
-    for (const view of handles) {
-      (async () => {
-        const obj = await handle();
-        if (_.has(obj, "root") && _.has(obj, "mount")) {
-          obj.mount(mnt);
-        }
-      })();
-    }
+    (async () => {
+      for (const h of handles) {
+      }
+    })();
+
+    // for (const view of handles) {
+    //   (async () => {
+    //     const obj = await handle();
+    //     if (_.has(obj, "root") && _.has(obj, "mount")) {
+    //       obj.mount(mnt);
+    //     }
+    //   })();
+    // }
   });
 
   return result;
