@@ -3,6 +3,7 @@ import _ from "lodash";
 import debug from "debug";
 
 import { dataProxy } from "./proxy";
+import { bindDomEvents, unBindDomEvents } from "./events";
 
 const log = debug("niba:view");
 
@@ -13,12 +14,16 @@ export default class View {
   off = off;
   emit = emit;
 
-  data = {
-    a: 1,
+  data = {};
+
+  #rendered = false;
+  #unBinders = null;
+
+  render = () => {
+    this.#unBinders && unBindDomEvents(this.#unBinders);
   };
 
   constructor({ tag = "div", className = null, name = null }) {
-    log(Object.keys(this));
     this.root = document.createElement(tag);
     this.root.id = _.uniqueId("niba-");
 
@@ -29,7 +34,7 @@ export default class View {
 
     this.$ = this.root.querySelector.bind(this.root);
     this.$$ = this.root.querySelectorAll.bind(this.root);
-    log(typeof this.data);
+
     this.data = dataProxy(this.data, this.emit);
   }
 }
