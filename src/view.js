@@ -8,6 +8,8 @@ import { dataProxy } from "./proxy";
 const log = debug("niba:view");
 const GATE = "nb-gate";
 
+export class View {} // 基类
+
 function _replace(_html, _keys = []) {
   for (const k of _keys) {
     const sRe = new RegExp(`<\\s*${k}\\s*>`, "ig");
@@ -62,7 +64,11 @@ async function create(args) {
   const $$ = root.querySelectorAll.bind(root);
 
   const { on, off, emit } = mitt();
-  const result = Object.assign({ ...args }, { $, $$, root, on, off, emit });
+  const result = Object.assign(
+    new View(),
+    { ...args },
+    { $, $$, root, on, off, emit }
+  );
 
   const children = await _reformChildren(result.children);
   const data = dataProxy({ ...result.data }, result.emit);

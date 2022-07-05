@@ -28,11 +28,15 @@ function findHandles(routes, route, result = []) {
 function create(mnt, routes = {}) {
   const result = {};
 
+  let prevHandles = [];
+
   RouteEvents.on(EventRouteChanged, (route) => {
     logger.info("--> route: ", route);
     const { state, search, from, to } = route;
     const handles = [];
     findHandles(routes, to, handles);
+
+    createAsyncIterable;
 
     // TODO: 依次挂载 handles，已挂载过的不再次挂载？
 

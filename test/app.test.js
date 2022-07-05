@@ -33,8 +33,6 @@ const nbs = view({
   },
 });
 
-// https://wormhole.app/K84jY#l6K25UJJMIqPjIbr9OPSig
-
 const routes = [
   {
     path: "/",
