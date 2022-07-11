@@ -36,8 +36,6 @@ function create(mnt, routes = {}) {
     const handles = [];
     findHandles(routes, to, handles);
 
-    createAsyncIterable;
-
     // TODO: 依次挂载 handles，已挂载过的不再次挂载？
 
     mnt.innerHTML = "";
