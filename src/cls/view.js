@@ -1,12 +1,24 @@
+import _ from "lodash";
+
+import { bindDomEvents, unBindDomEvents } from "../events";
+import { dataProxy } from "../proxy";
+
 class View {
   template = null;
+  name = null;
+  tag = "div";
 
-  constructor({ name, tag = "div" }) {
-    this.name = name;
-    this.tag = tag;
+  data = {};
 
+  render = () => {
+    this.eventsUnBinders && unBindDomEvents(this.eventsUnBinders);
+
+    this.eventsUnBinders = bindDomEvents(this);
+  };
+
+  constructor() {
     const root = document.createElement(this.tag);
-    root.id = _.uniqueId("niba-");
+    root.id = _.uniqueId("nb-");
     this.name && root.setAttribute("name", this.name);
 
     this.$ = root.querySelector.bind(root);
@@ -17,5 +29,7 @@ class View {
     this.on = on;
     this.off = off;
     this.emit = emit;
+
+    this.data = dataProxy({ ...this.data }, this.emit);
   }
 }
