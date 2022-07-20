@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-import { bindDomEvents, unBindDomEvents } from "../events";
+import { bindDomEvents, EventDataChanged, unBindDomEvents } from "../events";
 import { dataProxy } from "../proxy";
 
 class View {
@@ -10,10 +10,45 @@ class View {
 
   data = {};
 
+  #rendered = false;
+  #childrenInstance = {};
+
   render = () => {
     this.eventsUnBinders && unBindDomEvents(this.eventsUnBinders);
 
+    let compile = null;
+    if (_.isFunction(this.template)) {
+      compile = this.template;
+    } else if (_.isString(this.template)) {
+      compile = _.template(this.template);
+    }
+
+    this.root.innerHTML = compile({ ...data });
+
     this.eventsUnBinders = bindDomEvents(this);
+    this.#rendered = true;
+
+    // TODO: mount children
+    this.#mountChildren();
+  };
+
+  mount = (element) => {
+    this.#rendered || this.render();
+    element.replaceChildren(this.root);
+
+    this.on(EventDataChanged, _.debounce(this.render, 100));
+
+    this.mounted();
+  };
+
+  mounted() {}
+
+  #mountChildren = () => {
+    for (const [slot, child] of Object.entries(children)) {
+      log("--> child: %O", child);
+      const mnt = $(`slot[name=${slot}]`);
+      mnt && child.mount(mnt);
+    }
   };
 
   constructor() {
