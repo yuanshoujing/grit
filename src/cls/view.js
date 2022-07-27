@@ -1,7 +1,10 @@
 import _ from "lodash";
+import debug from "debug";
 
 import { bindDomEvents, EventDataChanged, unBindDomEvents } from "../events";
 import { dataProxy } from "../proxy";
+
+const log = debug("niba:view");
 
 class View {
   template = null;
@@ -12,6 +15,10 @@ class View {
 
   #rendered = false;
   #childrenInstance = {};
+
+  get gate() {
+    return this.#rendered ? $("slot[role=gate]") : null;
+  }
 
   render = () => {
     this.eventsUnBinders && unBindDomEvents(this.eventsUnBinders);
@@ -28,7 +35,6 @@ class View {
     this.eventsUnBinders = bindDomEvents(this);
     this.#rendered = true;
 
-    // TODO: mount children
     this.#mountChildren();
   };
 
@@ -38,16 +44,32 @@ class View {
 
     this.on(EventDataChanged, _.debounce(this.render, 100));
 
-    this.mounted();
+    // TODO: 换成 requestAnimationFrame
+    setTimeout(() => {
+      this.mounted();
+    }, 0);
   };
 
   mounted() {}
 
   #mountChildren = () => {
     for (const [slot, child] of Object.entries(children)) {
-      log("--> child: %O", child);
-      const mnt = $(`slot[name=${slot}]`);
-      mnt && child.mount(mnt);
+      const mnts = $$(`slot[name=${slot}]`);
+
+      for (const mnt of mnts) {
+        const key = mnt.getAttribute("key") || "";
+        const uid = `${slot}^${key}`;
+
+        const instance = this.#childrenInstance[uid];
+        if (!instance) {
+          instance = Reflect.construct(child);
+          Object.assign(this.#childrenInstance, {
+            [uid]: instance,
+          });
+        }
+
+        instance.mount(mnt);
+      }
     }
   };
 
