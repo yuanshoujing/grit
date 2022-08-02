@@ -44,15 +44,17 @@ class View {
 
     this.on(EventDataChanged, _.debounce(this.render, 100));
 
-    // TODO: 换成 requestAnimationFrame
-    setTimeout(() => {
-      this.mounted();
-    }, 0);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        this.mounted();
+      });
+    });
   };
 
   mounted() {}
 
   #mountChildren = () => {
+    // 子节点挂载点形如 <slot name='c-name' key="0"></slot>
     for (const [slot, child] of Object.entries(children)) {
       const mnts = $$(`slot[name=${slot}]`);
 
