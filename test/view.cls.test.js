@@ -1,32 +1,32 @@
-import view from "../src/view";
+import View from "../src/cls/view";
 
 import debug from "debug";
 debug.enable("*");
 
 const log = debug("niba:view.test");
 
-const nb = view({
-  template: "<div>Hello, <%- x %>!</div>",
+class NB extends View {
+  template = "<div>Hello, <%- x %>!</div>";
 
-  data: {
+  data = {
     x: "world",
-  },
-});
+  };
+}
 
-const pnb = view({
-  template: "<div><%- x %></div><slot name='c1'></slot>",
+class PNB extends View {
+  template = "<div><%- x %></div><slot name='c1'></slot>";
 
-  children: {
-    c1: nb,
-  },
+  children = {
+    c1: NB,
+  };
 
-  data: {
+  data = {
     x: "c1",
-  },
-});
+  };
+}
 
-test("view-test", async () => {
-  const instance = await nb();
+test("cls-view-test", async () => {
+  const instance = new NB();
   log("--> niba instance: %O", instance);
 
   const wrap = document.createElement("div");
