@@ -14,7 +14,6 @@ export default class View {
 
   data = {};
 
-  #dataSource = null;
   #rendered = false;
   #childrenInstance = {};
 
@@ -23,6 +22,7 @@ export default class View {
   }
 
   render = () => {
+    log("--> render");
     this.eventsUnBinders && unBindDomEvents(this.eventsUnBinders);
 
     let compile = null;
@@ -32,8 +32,8 @@ export default class View {
       compile = _.template(this.template);
     }
 
-    log("--> datasource: %O", this.#dataSource);
-    this.root.innerHTML = compile({ ...this.#dataSource });
+    log("--> data: %O", this.data);
+    this.root.innerHTML = compile({ ...this.data });
 
     this.eventsUnBinders = bindDomEvents(this);
     this.#rendered = true;
@@ -45,6 +45,7 @@ export default class View {
     this.#rendered || this.render();
     element.replaceChildren(this.root);
 
+    this.data = dataProxy({ ...this.data }, this.emit);
     this.on(EventDataChanged, _.debounce(this.render, 100));
 
     requestAnimationFrame(() => {
@@ -95,7 +96,5 @@ export default class View {
     this.on = on;
     this.off = off;
     this.emit = emit;
-
-    this.#dataSource = dataProxy(this.data, this.emit);
   }
 }

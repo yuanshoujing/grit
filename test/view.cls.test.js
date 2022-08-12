@@ -38,6 +38,7 @@ test("cls-view-test", async () => {
   expect(el.innerHTML).toBe("Hello, world!");
 
   const r = await new Promise((resolve) => {
+    log(instance.data);
     instance.data.x = "abc";
 
     setTimeout(() => {
